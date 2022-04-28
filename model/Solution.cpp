@@ -2,68 +2,147 @@
 
 #include <utility>
 
+using namespace std;
 
-Solution::Solution() = default;
+Solution::Solution() {
+    this->tokenizedExpr = tokenizer(this->expr);
+}
 
-Solution::Solution(std::string e) : expr(std::move(e)) {}
+Solution::Solution(std::string v) : expr(std::move(v)) {
+    this->tokenizedExpr = tokenizer(this->expr);
+}
 
 Solution::~Solution() = default;
 
 void Solution::setExpression(const std::string &e) {
     this->expr = e;
+    this->tokenizedExpr = tokenizer(e);
 }
 
-llInt Solution::calculate() {
-    llInt l1 = 0, l2 = 1;
-    llInt o1 = 1, o2 = 1;
+bool Solution::isOperator(const string &c) {
+    return (c == "+" || c == "-" || c == "*" || c == "/");
+}
 
-    std::stack<llInt> st;
+bool Solution::isOperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/');
+}
 
-    for (long long i = 0; i < expr.size(); i++) {
-        char x = expr[i];
-        if (std::isdigit(x)) {
-            llInt num = x - '0';
-            while (i + 1 < expr.size() && isdigit(expr[i + 1])) {
-                i++;
-                num = (num * 10) + (expr[i] - '0');
-            }
-            l2 = (o2 == 1) ? l2 * num : l2 / num;
-        } else if (x == '(') {
-            st.push(l1);
-            st.push(o1);
-            st.push(l2);
-            st.push(o2);
-            l1 = 0;
-            o2 = 1;
-            o1 = 1;
-            l2 = 1;
-        } else if (x == ')') {
-            llInt temp = l1 + o1 * l2;
-            o2 = st.top();
-            st.pop();
-            l2 = st.top();
-            st.pop();
-            o1 = st.top();
-            st.pop();
-            l1 = st.top();
-            st.pop();
-            l2 = (o2 == 1) ? l2 * temp : l2 / temp;
-        } else if (x == '*' || x == '/') {
-            o2 = (x == '*') ? 1 : -1;
-        } else if (x == '+' || x == '-') {
-            if (x == '-' && (i == 0 || (i - 1 >= 0 && expr[i - 1] == '('))) {
-                o1 = -1;
-                continue;
-            }
-            l1 += o1 * l2;
-            o1 = (x == '+') ? 1 : -1;
-            l2 = 1;
-            o2 = 1;
+bool Solution::isOperand(const string &c) {
+    if (!(isOperator(c)))
+        return (c != ")") && (c != "(");
+    return false;
+}
+
+ldouble Solution::calculateWithSign(char c, ldouble a, ldouble b) {
+    switch (c) {
+        case '+':
+            return (a + b);
+        case '-':
+            return (a - b);
+        case '*':
+            return (a * b);
+        case '/':
+            return (a / b);
+    }
+    return 0;
+}
+
+int Solution::getPrior(char c) {
+    if (c == '*' || c == '/') {
+        return 2;
+    }
+    else if (c == '+' || c == '-') {
+        return 1;
+    }
+    return 0;
+}
+
+
+ldouble Solution::postfixCalculator(std::vector<string> postfixes) {
+    std::vector<ldouble> operands;
+    ldouble a, b, c;
+
+    for (auto &postfix: postfixes) {
+        if (isOperand(postfix))
+            operands.push_back(std::stoi(postfix));
+        else if (operands.size() > 1) {
+            b = operands.back();
+            operands.pop_back();
+            a = operands.back();
+            operands.pop_back();
+            c = calculateWithSign(postfix[0], a, b);
+            operands.push_back(c);
         }
     }
-    return (l1 + o1 * l2);
+    return operands[0];
+}
+
+std::vector<string> Solution::convertToPostfix(std::vector<string> infix) {
+    std::vector<string> operators;
+    std::vector<string> postfix;
+
+    for (auto &i: infix) {
+        if (isOperand(i)) {
+            postfix.push_back(i);
+        } else if (i == "(") {
+            operators.push_back(i);
+        } else if (i == ")") {
+            while (!operators.empty() && operators.back()[0] != '(') {
+                postfix.emplace_back(1, operators.back()[0]);
+                operators.pop_back();
+            }
+            operators.pop_back();
+        } else if (isOperator(i)) {
+            while (!operators.empty() && operators.back()[0] != '(' &&
+                   getPrior(operators.back()[0]) >= getPrior(i[0])) {
+                postfix.emplace_back(1, operators.back()[0]);
+                operators.pop_back();
+            }
+            operators.push_back(i);
+        }
+    }
+
+    while (!operators.empty()) {
+        postfix.emplace_back(1, operators.back()[0]);
+        operators.pop_back();
+    }
+    return postfix;
+}
+
+std::vector<string> Solution::tokenizer(string str) {
+    std::vector<string> tokens;
+    string temp;
+
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == '(' || str[i] == ')') {
+            temp = str[i];
+            tokens.push_back(temp);
+            temp = "";
+            continue;
+        }
+
+        if (isOperator(str[i])) {
+            temp = "";
+            temp += str[i];
+            tokens.push_back(temp);
+            temp = "";
+        } else {
+            while (i < str.length()) {
+                temp += str[i];
+                i++;
+                if (isOperator(str[i]) || str[i] == '(' || str[i] == ')') {
+                    i--;
+                    break;
+                }
+            }
+            tokens.push_back(temp);
+            temp = "";
+        }
+    }
+    return tokens;
 }
 
 std::string Solution::getSolution() {
-    return to_string(this->calculate());
+    this->result = to_string(postfixCalculator(convertToPostfix(this->tokenizedExpr)));
+    return this->result;
 }

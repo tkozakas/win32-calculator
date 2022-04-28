@@ -8,23 +8,41 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-typedef long long int llInt;
+typedef long double ldouble;
+
 class Solution {
 public:
     Solution();
 
-    explicit Solution(std::string);
+    explicit Solution(std::string v);
 
     ~Solution();
 
     void setExpression(const std::string &);
 
-    llInt calculate();
+    int getPrior(char c);
+
+    bool isOperator( const string& c);
+
+    bool isOperator(char c);
+
+    bool isOperand(const string& c);
+
+    std::vector<string> convertToPostfix(std::vector<string> infix);
+
+    std::vector<string> tokenizer(string str);
+
+    ldouble calculateWithSign(char c, ldouble a, ldouble b);
+
+    ldouble postfixCalculator(std::vector<string> postfixes);
 
     std::string getSolution();
 
 private:
     std::string expr;
+    std::string result;
+
+    vector<std::string> tokenizedExpr;
 };
 
 

@@ -45,5 +45,4 @@ void Model::calculateResult() {
     }
 
     this->input = this->result;
-    std::cout << this->input << std::endl;
 }
