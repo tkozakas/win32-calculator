@@ -23,6 +23,9 @@ char *Model::getInput() {
 }
 
 void Model::addInput(const std::string &in) {
+    if (this->input == "error") {
+        this->input.clear();
+    }
     this->input += in;
 }
 
@@ -32,7 +35,9 @@ void Model::clearInput() {
 }
 
 void Model::removeInput() {
-    this->input.pop_back();
+    if (!this->input.empty()) {
+        this->input.pop_back();
+    }
 }
 
 void Model::calculateResult() {

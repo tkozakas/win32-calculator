@@ -8,8 +8,8 @@ Solution::Solution() {
     this->tokenizedExpr = tokenizer(this->expr);
 }
 
-Solution::Solution(std::string v) : expr(std::move(v)) {
-    this->tokenizedExpr = tokenizer(this->expr);
+Solution::Solution(std::string e) {
+    this->setExpression(e);
 }
 
 Solution::~Solution() = default;
@@ -17,6 +17,7 @@ Solution::~Solution() = default;
 void Solution::setExpression(const std::string &e) {
     this->expr = e;
     this->tokenizedExpr = tokenizer(e);
+    this->tokenizedExpr = convertToPostfix(this->tokenizedExpr);
 }
 
 bool Solution::isOperator(const string &c) {
@@ -28,8 +29,9 @@ bool Solution::isOperator(char c) {
 }
 
 bool Solution::isOperand(const string &c) {
-    if (!(isOperator(c)))
+    if (!(isOperator(c))) {
         return (c != ")") && (c != "(");
+    }
     return false;
 }
 
@@ -50,8 +52,7 @@ ldouble Solution::calculateWithSign(char c, ldouble a, ldouble b) {
 int Solution::getPrior(char c) {
     if (c == '*' || c == '/') {
         return 2;
-    }
-    else if (c == '+' || c == '-') {
+    } else if (c == '+' || c == '-') {
         return 1;
     }
     return 0;
@@ -142,7 +143,28 @@ std::vector<string> Solution::tokenizer(string str) {
     return tokens;
 }
 
+bool Solution::validateExpression() {
+    long numbers = 0, operators = 0;
+    for (auto e: tokenizedExpr) {
+        if (isOperator(e)) {
+            operators++;
+        } else if (isOperand(e)) {
+            numbers++;
+        }
+    }
+
+    if (numbers + 1 > operators) {
+        return true;
+    }
+    return false;
+}
+
 std::string Solution::getSolution() {
-    this->result = to_string(postfixCalculator(convertToPostfix(this->tokenizedExpr)));
+    if(this->validateExpression()) {
+        this->result = to_string(postfixCalculator(this->tokenizedExpr));
+    } else {
+        this->result = "math error";
+    }
+
     return this->result;
 }

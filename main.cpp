@@ -12,9 +12,9 @@ int main() {
     View *view = new View;
 
     Controller *controller = new Controller(view, model);
+    Observer *observ = new Observer(controller);
     //Controller *controller = new Controller(view);
     //Controller *controller = new Controller(model);
-    Observer *observ = new Observer(controller);
 
     view->setObserver(observ);
     model->setObserver(observ);

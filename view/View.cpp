@@ -6,7 +6,7 @@
 #define WINDOW_HEIGHT 330
 
 #define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, \
-                                                (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), NULL, NULL);
+                                                (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), nullptr, nullptr);
 
 Observer *View::observer{};
 HWND View::textField{};
@@ -62,6 +62,7 @@ bool View::processMessage() {
     return true;
 }
 
+
 LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_COMMAND:
@@ -78,14 +79,14 @@ LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void View::buttonInput(WPARAM wparam) {
-    if(!observer->controllerHaveModel()) {
+    if (!observer->controllerHaveModel()) {
+        std::cout << "Controller doesn't have model passed" << std::endl;
         return;
     }
 
     if (wparam >= 200 && wparam <= 209) {
         observer->inputQuery(std::to_string(wparam - 200));
     }
-
     switch (wparam) {
         case 11:
             observer->inputQuery(".");
@@ -120,6 +121,7 @@ void View::buttonInput(WPARAM wparam) {
         default:
             break;
     }
+
     updateField(observer->getInputQuery());
 }
 
@@ -162,7 +164,7 @@ void View::createWindow() {
             WINDOW_WIDTH,
             60,
             hWnd,
-            (HMENU) 1,
+            nullptr,
             hInstance,
             nullptr
     );

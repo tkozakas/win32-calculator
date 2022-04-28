@@ -20,23 +20,26 @@ public:
 
     void setExpression(const std::string &);
 
-    int getPrior(char c);
-
-    bool isOperator( const string& c);
-
-    bool isOperator(char c);
-
-    bool isOperand(const string& c);
-
-    std::vector<string> convertToPostfix(std::vector<string> infix);
-
-    std::vector<string> tokenizer(string str);
-
-    ldouble calculateWithSign(char c, ldouble a, ldouble b);
-
-    ldouble postfixCalculator(std::vector<string> postfixes);
-
     std::string getSolution();
+
+private:
+    int getPrior(char);
+
+    bool isOperator(const string &);
+
+    bool isOperator(char);
+
+    bool isOperand(const string &);
+
+    bool validateExpression();
+
+    std::vector<string> tokenizer(string);
+
+    ldouble calculateWithSign(char, ldouble, ldouble);
+
+    ldouble postfixCalculator(std::vector<string>);
+
+    std::vector<string> convertToPostfix(std::vector<string>);
 
 private:
     std::string expr;

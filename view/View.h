@@ -20,9 +20,13 @@ public:
 
     void createWindow();
 
+private:
+    static LRESULT CALLBACK windowProcess(HWND, UINT, WPARAM, LPARAM);
+
     static void buttonInput(WPARAM);
 
     static void updateField(const char *);
+
 private:
     static class Observer *observer;
 
@@ -32,8 +36,6 @@ private:
     WNDCLASS wndClass{};
     HINSTANCE hInstance{};
     HFONT hf{};
-
-    static LRESULT CALLBACK windowProcess(HWND, UINT, WPARAM, LPARAM);
 };
 
 
