@@ -24,7 +24,7 @@ void Controller::setView(View *pView) {
 }
 
 void Controller::onLoad() {
-    if(view != nullptr) {
+    if (view != nullptr) {
         this->view->Render();
     }
 }

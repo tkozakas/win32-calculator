@@ -8,10 +8,6 @@ Model::Model() {}
 
 Model::~Model() = default;
 
-void Model::setObserver(Observer *obs) {
-    this->observer = obs;
-}
-
 char *Model::convertToPtrChar(const std::string &s) {
     char *res = new char[s.size() + 1];
     memcpy(res, s.c_str(), s.size() + 1);

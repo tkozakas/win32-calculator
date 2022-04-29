@@ -23,15 +23,13 @@ public:
     std::string getSolution();
 
 private:
-    int getPrior(char);
+    int getPriority(char);
 
     bool isOperator(const string &);
 
     bool isOperator(char);
 
     bool isOperand(const string &);
-
-    bool validateExpression();
 
     std::vector<string> tokenizer(string);
 
@@ -41,10 +39,9 @@ private:
 
     std::vector<string> convertToPostfix(std::vector<string>);
 
+    std::vector<std::string> reduceSign(std::vector<std::string>);
 private:
-    std::string expr;
     std::string result;
-
     vector<std::string> tokenizedExpr;
 };
 

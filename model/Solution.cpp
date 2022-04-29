@@ -1,12 +1,8 @@
 #include "Solution.h"
 
-#include <utility>
-
 using namespace std;
 
-Solution::Solution() {
-    this->tokenizedExpr = tokenizer(this->expr);
-}
+Solution::Solution() = default;
 
 Solution::Solution(std::string e) {
     this->setExpression(e);
@@ -14,14 +10,14 @@ Solution::Solution(std::string e) {
 
 Solution::~Solution() = default;
 
-void Solution::setExpression(const std::string &e) {
-    this->expr = e;
-    this->tokenizedExpr = tokenizer(e);
+void Solution::setExpression(const std::string &expression) {
+    this->tokenizedExpr = tokenizer(expression);
+    this->tokenizedExpr = this->reduceSign(this->tokenizedExpr);
     this->tokenizedExpr = convertToPostfix(this->tokenizedExpr);
 }
 
 bool Solution::isOperator(const string &c) {
-    return (c == "+" || c == "-" || c == "*" || c == "/");
+    return isOperator(c[0]);
 }
 
 bool Solution::isOperator(char c) {
@@ -29,10 +25,21 @@ bool Solution::isOperator(char c) {
 }
 
 bool Solution::isOperand(const string &c) {
-    if (!(isOperator(c))) {
-        return (c != ")") && (c != "(");
+    return !isOperator(c) && (c != ")" && c != "(");
+}
+
+std::vector<std::string> Solution::reduceSign(std::vector<std::string> expression) {
+    for (long long e = 0; e < expression.size(); e++) {
+        if (expression[e] == "-" && expression[e + 1] == "-") {
+            expression[e] = "+";
+            expression.erase(expression.begin() + e + 1);
+        } else if ((expression[e] == "+" && expression[e + 1] == "-") ||
+                   (expression[e] == "-" && expression[e + 1] == "+")) {
+            expression[e] = "-";
+            expression.erase(expression.begin() + e + 1);
+        }
     }
-    return false;
+    return expression;
 }
 
 ldouble Solution::calculateWithSign(char c, ldouble a, ldouble b) {
@@ -49,7 +56,7 @@ ldouble Solution::calculateWithSign(char c, ldouble a, ldouble b) {
     return 0;
 }
 
-int Solution::getPrior(char c) {
+int Solution::getPriority(char c) {
     if (c == '*' || c == '/') {
         return 2;
     } else if (c == '+' || c == '-') {
@@ -62,19 +69,34 @@ int Solution::getPrior(char c) {
 ldouble Solution::postfixCalculator(std::vector<string> postfixes) {
     std::vector<ldouble> operands;
     ldouble a, b, c;
+    std::string leftSide;
+
+    for (auto post: postfixes) {
+        std::cout << post;
+    }
+    std::cout << std::endl;
 
     for (auto &postfix: postfixes) {
-        if (isOperand(postfix))
+        if (isOperand(postfix)) {
             operands.push_back(std::stoi(postfix));
-        else if (operands.size() > 1) {
-            b = operands.back();
-            operands.pop_back();
-            a = operands.back();
-            operands.pop_back();
-            c = calculateWithSign(postfix[0], a, b);
+            std::cout << operands.back() << std::endl;
+        } else {
+            std::cout << postfix << std::endl;
+            if (operands.size() > 1) {
+                b = operands.back();
+                operands.pop_back();
+                a = operands.back();
+                operands.pop_back();
+                std::cout << "sign:" << postfix[0] << " a:" << a << " b:" << b << std::endl;
+                c = calculateWithSign(postfix[0], a, b);
+            }
+
             operands.push_back(c);
         }
+
     }
+
+
     return operands[0];
 }
 
@@ -82,24 +104,25 @@ std::vector<string> Solution::convertToPostfix(std::vector<string> infix) {
     std::vector<string> operators;
     std::vector<string> postfix;
 
-    for (auto &i: infix) {
-        if (isOperand(i)) {
-            postfix.push_back(i);
-        } else if (i == "(") {
-            operators.push_back(i);
-        } else if (i == ")") {
+    for (auto &inf: infix) {
+        if (isOperand(inf)) {
+            postfix.push_back(inf);
+        } else if (inf == "(") {
+            operators.push_back(inf);
+        } else if (inf == ")") {
             while (!operators.empty() && operators.back()[0] != '(') {
                 postfix.emplace_back(1, operators.back()[0]);
                 operators.pop_back();
             }
             operators.pop_back();
-        } else if (isOperator(i)) {
+        } else if (isOperator(inf)) {
             while (!operators.empty() && operators.back()[0] != '(' &&
-                   getPrior(operators.back()[0]) >= getPrior(i[0])) {
+                   getPriority(operators.back()[0]) >= getPriority(inf[0])) {
+
                 postfix.emplace_back(1, operators.back()[0]);
                 operators.pop_back();
             }
-            operators.push_back(i);
+            operators.push_back(inf);
         }
     }
 
@@ -115,56 +138,38 @@ std::vector<string> Solution::tokenizer(string str) {
     string temp;
 
     for (int i = 0; i < str.length(); i++) {
+        if (str[i] == ' ') {
+            continue;
+        }
         if (str[i] == '(' || str[i] == ')') {
             temp = str[i];
             tokens.push_back(temp);
-            temp = "";
+            temp.clear();
             continue;
         }
 
         if (isOperator(str[i])) {
-            temp = "";
+            temp.clear();
             temp += str[i];
             tokens.push_back(temp);
-            temp = "";
+            temp.clear();
         } else {
-            while (i < str.length()) {
+            do {
                 temp += str[i];
                 i++;
                 if (isOperator(str[i]) || str[i] == '(' || str[i] == ')') {
                     i--;
                     break;
                 }
-            }
+            } while (i < str.length());
             tokens.push_back(temp);
-            temp = "";
+            temp.clear();
         }
     }
     return tokens;
 }
 
-bool Solution::validateExpression() {
-    long numbers = 0, operators = 0;
-    for (auto e: tokenizedExpr) {
-        if (isOperator(e)) {
-            operators++;
-        } else if (isOperand(e)) {
-            numbers++;
-        }
-    }
-
-    if (numbers + 1 > operators) {
-        return true;
-    }
-    return false;
-}
-
 std::string Solution::getSolution() {
-    if(this->validateExpression()) {
-        this->result = to_string(postfixCalculator(this->tokenizedExpr));
-    } else {
-        this->result = "math error";
-    }
-
+    this->result = to_string(postfixCalculator(this->tokenizedExpr));
     return this->result;
 }

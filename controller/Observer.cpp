@@ -16,7 +16,7 @@ void Observer::resultQuery() {
     contr->modelHandler(RESULT);
 }
 
-void Observer::inputQuery(const std::string& input) {
+void Observer::inputQuery(const std::string &input) {
     contr->addModelInput(input);
 }
 
@@ -24,16 +24,7 @@ char *Observer::getInputQuery() {
     return contr->getModelInput();
 }
 
-bool Observer::controllerHaveModel() {
-    if(contr->getModel() != nullptr) {
-        return true;
-    }
-    return false;
+bool Observer::isModelSet() {
+    return contr->getModel() != nullptr;
 }
 
-bool Observer::controllerHaveView() {
-    if(contr->getView() != nullptr) {
-        return true;
-    }
-    return false;
-}

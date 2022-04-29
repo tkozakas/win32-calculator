@@ -15,8 +15,6 @@ public:
 
     ~Model();
 
-    void setObserver(class Observer*);
-
     char *getInput();
 
     void clearInput();
@@ -30,8 +28,6 @@ public:
 private:
     std::string input;
     std::string result;
-
-    class Observer *observer;
 };
 
 

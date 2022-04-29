@@ -12,12 +12,11 @@ int main() {
     View *view = new View;
 
     Controller *controller = new Controller(view, model);
-    Observer *observ = new Observer(controller);
+    Observer *observer = new Observer(controller);
     //Controller *controller = new Controller(view);
     //Controller *controller = new Controller(model);
 
-    view->setObserver(observ);
-    model->setObserver(observ);
+    view->setObserver(observer);
 
     controller->onLoad();
     return 0;

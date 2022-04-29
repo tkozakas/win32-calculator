@@ -79,7 +79,7 @@ LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void View::buttonInput(WPARAM wparam) {
-    if (!observer->controllerHaveModel()) {
+    if (!observer->isModelSet()) {
         std::cout << "Controller doesn't have model passed" << std::endl;
         return;
     }
@@ -92,22 +92,22 @@ void View::buttonInput(WPARAM wparam) {
             observer->inputQuery(".");
             break;
         case 12:
-            observer->inputQuery("(");
+            observer->inputQuery(" (");
             break;
         case 13:
-            observer->inputQuery(")");
+            observer->inputQuery(") ");
             break;
         case 14:
-            observer->inputQuery("/");
+            observer->inputQuery(" / ");
             break;
         case 15:
-            observer->inputQuery("*");
+            observer->inputQuery(" * ");
             break;
         case 16:
-            observer->inputQuery("-");
+            observer->inputQuery(" - ");
             break;
         case 17:
-            observer->inputQuery("+");
+            observer->inputQuery(" + ");
             break;
         case 18:
             observer->resultQuery();

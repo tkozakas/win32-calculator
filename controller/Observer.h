@@ -18,9 +18,7 @@ public:
 
     void resultQuery();
 
-    bool controllerHaveModel();
-
-    bool controllerHaveView();
+    bool isModelSet();
 
 private:
     Controller *contr;
