@@ -31,6 +31,8 @@ private:
 
     bool isOperand(const string &);
 
+    bool validate(std::string);
+
     std::vector<string> tokenizer(string);
 
     ldouble calculateWithSign(char, ldouble, ldouble);

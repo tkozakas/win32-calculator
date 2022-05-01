@@ -25,20 +25,25 @@ bool Solution::isOperator(char c) {
 }
 
 bool Solution::isOperand(const string &c) {
-    return !isOperator(c) && (c != ")" && c != "(");
+    return !isOperator(c) && (c != ")" && c != "(") || c.size() > 1;
 }
 
 std::vector<std::string> Solution::reduceSign(std::vector<std::string> expression) {
+
     for (long long e = 0; e < expression.size(); e++) {
-        if (expression[e] == "-" && expression[e + 1] == "-") {
-            expression[e] = "+";
-            expression.erase(expression.begin() + e + 1);
-        } else if ((expression[e] == "+" && expression[e + 1] == "-") ||
-                   (expression[e] == "-" && expression[e + 1] == "+")) {
-            expression[e] = "-";
-            expression.erase(expression.begin() + e + 1);
+        if (expression[e] == "-" && isOperand(expression[e + 1]) && e + 1 < expression.size()) {
+
+            expression[e + 1] = to_string(stoi(expression[e + 1]) * -1);
+            std::cout << expression[e - 1] << expression[e] << expression[e + 1] << std::endl;
+
+            if (e > 0 && isOperand(expression[e - 1])) {
+                expression[e] = "+";
+            } else {
+                expression.erase(expression.begin() + e);
+            }
         }
     }
+
     return expression;
 }
 
@@ -71,17 +76,11 @@ ldouble Solution::postfixCalculator(std::vector<string> postfixes) {
     ldouble a, b, c;
     std::string leftSide;
 
-    for (auto post: postfixes) {
-        std::cout << post;
-    }
-    std::cout << std::endl;
 
     for (auto &postfix: postfixes) {
         if (isOperand(postfix)) {
             operands.push_back(std::stoi(postfix));
-            std::cout << operands.back() << std::endl;
         } else {
-            std::cout << postfix << std::endl;
             if (operands.size() > 1) {
                 b = operands.back();
                 operands.pop_back();
@@ -90,7 +89,6 @@ ldouble Solution::postfixCalculator(std::vector<string> postfixes) {
                 std::cout << "sign:" << postfix[0] << " a:" << a << " b:" << b << std::endl;
                 c = calculateWithSign(postfix[0], a, b);
             }
-
             operands.push_back(c);
         }
 

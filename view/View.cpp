@@ -92,10 +92,10 @@ void View::buttonInput(WPARAM wparam) {
             observer->inputQuery(".");
             break;
         case 12:
-            observer->inputQuery(" (");
+            observer->inputQuery("(");
             break;
         case 13:
-            observer->inputQuery(") ");
+            observer->inputQuery(")");
             break;
         case 14:
             observer->inputQuery(" / ");
