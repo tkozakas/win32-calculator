@@ -34,7 +34,6 @@ std::vector<std::string> Solution::reduceSign(std::vector<std::string> expressio
         if (expression[e] == "-" && isOperand(expression[e + 1]) && e + 1 < expression.size()) {
 
             expression[e + 1] = to_string(stoi(expression[e + 1]) * -1);
-            std::cout << expression[e - 1] << expression[e] << expression[e + 1] << std::endl;
 
             if (e > 0 && isOperand(expression[e - 1])) {
                 expression[e] = "+";
