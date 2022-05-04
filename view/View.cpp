@@ -3,8 +3,8 @@
 
 #define BUTTON_WIDTH 50
 #define BUTTON_HEIGHT 50
-#define WINDOW_WIDTH 200
-#define WINDOW_HEIGHT 330
+#define WINDOW_WIDTH 220
+#define WINDOW_HEIGHT 350
 
 #define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_OWNERDRAW, \
 (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), hInstance, nullptr)
@@ -208,11 +208,11 @@ void View::createTextField() {
             "",
             WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL,
             0,
-            0,
+            10,
             WINDOW_WIDTH,
             60,
             hWnd,
-            (HMENU) 212222222,
+            (HMENU) 21,
             hInstance,
             nullptr
     );
@@ -229,16 +229,16 @@ void View::createTextField() {
 }
 
 void View::createButtons() {
-    int xPos[20] = {50, 0, 50, 100,
-                    0, 50, 100, 0,
-                    50, 100, 0, 50,
-                    100, 150, 150, 150,
-                    150, 150, 0, 100};
-    int yPos[20] = {270, 120, 120, 120,
-                    170, 170, 170, 220,
-                    220, 220, 70, 70,
-                    70, 70, 120, 170,
-                    220, 270, 270, 270};
+    int xPos[20] = {60, 10, 60, 110,
+                    10, 60, 110, 10,
+                    60, 110, 10, 60,
+                    110, 160, 160, 160,
+                    160, 160, 10, 110};
+    int yPos[20] = {280, 130, 130, 130,
+                    180, 180, 180, 230,
+                    230, 230, 80, 80,
+                    80, 80, 130, 180,
+                    230, 280, 280, 280};
     for (int i = 0; i < 20; i++) {
         HWND button = Button("", (HMENU) i, xPos[i], yPos[i]);
     }
