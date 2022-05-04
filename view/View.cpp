@@ -79,11 +79,6 @@ LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void View::buttonInput(WPARAM wparam) {
-    if (!observer->isModelSet()) {
-        std::cout << "Controller doesn't have model passed" << std::endl;
-        return;
-    }
-
     if (wparam >= 200 && wparam <= 209) {
         observer->inputQuery(std::to_string(wparam - 200));
     }
@@ -92,10 +87,10 @@ void View::buttonInput(WPARAM wparam) {
             observer->inputQuery(".");
             break;
         case 12:
-            observer->inputQuery("(");
+            observer->inputQuery("( ");
             break;
         case 13:
-            observer->inputQuery(")");
+            observer->inputQuery(" )");
             break;
         case 14:
             observer->inputQuery(" / ");

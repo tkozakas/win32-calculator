@@ -32,8 +32,6 @@ void Controller::onLoad() {
 char *Controller::getModelInput() {
     if (this->model != nullptr) {
         return this->model->getInput();
-    } else {
-        std::cout << "Model not passed to controller construction" << std::endl;
     }
 }
 
@@ -41,7 +39,7 @@ void Controller::addModelInput(const std::string &input) {
     if (this->model != nullptr) {
         this->model->addInput(input);
     } else {
-        std::cout << "Model not passed to controller construction" << std::endl;
+        std::cout << input;
     }
 }
 
@@ -63,8 +61,6 @@ void Controller::modelHandler(int key) {
             default:
                 break;
         }
-    } else {
-        std::cout << "Model not passed to controller construction" << std::endl;
     }
 }
 

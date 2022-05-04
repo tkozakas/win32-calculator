@@ -8,7 +8,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-typedef long double ldouble;
+typedef long double Type;
 
 class Solution {
 public:
@@ -31,13 +31,13 @@ private:
 
     bool isOperand(const string &);
 
-    bool validate(std::string);
+    //bool validate(std::string);
 
     std::vector<string> tokenizer(string);
 
-    ldouble calculateWithSign(char, ldouble, ldouble);
+    Type calculateWithSign(char, Type, Type);
 
-    ldouble postfixCalculator(std::vector<string>);
+    Type postfixCalculator(std::vector<string>);
 
     std::vector<string> convertToPostfix(std::vector<string>);
 

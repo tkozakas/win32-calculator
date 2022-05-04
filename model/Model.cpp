@@ -4,10 +4,13 @@
 #include <algorithm>
 #include <sstream>
 
-Model::Model() {}
+Model::Model() = default;
+
+Model::Model(std::string in) : input(in) {}
 
 Model::~Model() = default;
 
+// Function converts to pointer char (win32 functions are supporting only char*)
 char *Model::convertToPtrChar(const std::string &s) {
     char *res = new char[s.size() + 1];
     memcpy(res, s.c_str(), s.size() + 1);
@@ -36,7 +39,7 @@ void Model::removeInput() {
     }
 }
 
-void Model::calculateResult() {
+std::string Model::calculateResult() {
     Solution sol(this->input);
 
     if (this->input.empty()) {
@@ -46,4 +49,11 @@ void Model::calculateResult() {
     }
 
     this->input = this->result;
+
+    return this->result;
+}
+
+Model &Model::operator=(const std::string &str) {
+    this->input = str;
+    return *this;
 }

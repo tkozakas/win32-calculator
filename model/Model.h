@@ -13,6 +13,8 @@ private:
 public:
     Model();
 
+    Model(std::string);
+
     ~Model();
 
     char *getInput();
@@ -23,13 +25,13 @@ public:
 
     void addInput(const std::string &);
 
-    void calculateResult();
+    std::string calculateResult();
 
+    Model &operator=(const std::string &);
 private:
     std::string input;
     std::string result;
 };
-
 
 
 #endif
