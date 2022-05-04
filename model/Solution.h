@@ -8,7 +8,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-typedef long double Type;
+typedef int Type;
 
 class Solution {
 public:
@@ -30,8 +30,6 @@ private:
     bool isOperator(char);
 
     bool isOperand(const string &);
-
-    //bool validate(std::string);
 
     std::vector<string> tokenizer(string);
 

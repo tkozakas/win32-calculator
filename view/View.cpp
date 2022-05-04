@@ -5,13 +5,12 @@
 #define WINDOW_WIDTH 200
 #define WINDOW_HEIGHT 330
 
-#define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, \
-                                                (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), nullptr, nullptr);
+#define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD, \
+                                                (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), hInstance, nullptr);
 
 Observer *View::observer{};
 HWND View::textField{};
 HWND View::hWnd{};
-
 
 View::View()
         : hInstance(GetModuleHandle(nullptr)) {
@@ -19,6 +18,7 @@ View::View()
 
     this->wndClass.lpszClassName = "Window Class";
     this->wndClass.hInstance = hInstance;
+    this->wndClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 3);
     this->wndClass.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
     this->wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
     this->wndClass.lpfnWndProc = windowProcess;
@@ -62,9 +62,39 @@ bool View::processMessage() {
     return true;
 }
 
+void View::colorBackground(WPARAM wparam) {
+    SetTextColor((HDC) wparam, RGB(255, 255, 255));
+    SetBkColor((HDC) wparam, RGB(255, 255, 255));
+    SetBkMode((HDC) wparam, TRANSPARENT);
+}
+
+HBITMAP hBitmap = nullptr;
 
 LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    HDC hDC, hMemDC;
+    RECT r;
     switch (uMsg) {
+        case WM_CTLCOLORBTN:
+//            hDC = GetDC(hWnd);
+//            hMemDC = CreateCompatibleDC(hDC);
+//            hBitmap = CreateCompatibleBitmap(hDC, 55, 25);
+//            SelectObject(hMemDC, hBitmap);
+//            SetDCBrushColor(hMemDC, RGB(0, 0, 255));
+//            r = {0};
+//            r.left = 0;
+//            r.right = 55;
+//            r.top = 0;
+//            r.bottom = 25;
+//            FillRect(hMemDC, &r, (HBRUSH) GetStockObject(DC_BRUSH));
+//            DeleteDC(hMemDC);
+//            ReleaseDC(hWnd, hDC);
+            break;
+        case WM_CTLCOLOREDIT:
+            colorBackground(wParam);
+            return (LRESULT) CreateSolidBrush(BLACK_BRUSH);
+        case WM_CHAR:
+            keyboardInput(wParam);
+            break;
         case WM_COMMAND:
             buttonInput(wParam);
             break;
@@ -76,6 +106,29 @@ LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
             return 0;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void View::keyboardInput(WPARAM wparam) {
+    char ch = static_cast<char>(wparam);
+
+    std::string str;
+    str.push_back(ch);
+
+    if ((ch >= '0' && ch <= '9') || (ch == '.')) {
+        observer->inputQuery(str);
+    } else if ((ch >= '*' && ch <= '+') || (ch == '-') || (ch == '/')) {
+        observer->inputQuery(" " + str + " ");
+    } else if (ch == '(') {
+        observer->inputQuery(str + " ");
+    } else if (ch == ')') {
+        observer->inputQuery(" " + str);
+    } else if (str == "=" || wparam == VK_RETURN) {
+        observer->resultQuery();
+    } else if (wparam == VK_BACK) {
+        observer->removeQuery();
+    }
+
+    updateField(observer->getInputQuery());
 }
 
 void View::buttonInput(WPARAM wparam) {
@@ -125,20 +178,20 @@ void View::updateField(const char *fieldText) {
 }
 
 void View::createWindow() {
-    DWORD style = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-
     RECT rect;
     rect.left = 250;
     rect.top = 250;
     rect.right = rect.left + WINDOW_WIDTH;
     rect.bottom = rect.top + WINDOW_HEIGHT;
 
-    AdjustWindowRect(&rect, style, false);
-
+    AdjustWindowRect(
+            &rect,
+            WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+            false);
     hWnd = CreateWindow (
             "Window Class",
             "win32-Calculator",
-            style,
+            WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
             rect.left,
             rect.top,
             rect.right - rect.left,
@@ -149,17 +202,18 @@ void View::createWindow() {
             nullptr
     );
 
+
     // Text Field
     textField = CreateWindow(
             "EDIT",
             "",
-            WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL,
+            WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL,
             0,
             0,
             WINDOW_WIDTH,
             60,
             hWnd,
-            nullptr,
+            0,
             hInstance,
             nullptr
     );
@@ -181,7 +235,6 @@ void View::createWindow() {
             0,
             "Cambria Math"
     );
-
     // Buttons
     Button("0", 200, 50, 270);
     Button("1", 201, 0, 120);
@@ -194,7 +247,6 @@ void View::createWindow() {
     Button("8", 208, 50, 220);
     Button("9", 209, 100, 220);
 
-
     Button(".", 11, 0, 70);
     Button("(", 12, 50, 70);
     Button(")", 13, 100, 70);
@@ -204,7 +256,6 @@ void View::createWindow() {
     Button("-", 16, 150, 170);
     Button("+", 17, 150, 220);
     Button("=", 18, 150, 270);
-
     Button("C", 19, 0, 270);
     Button("X", 20, 100, 270);
 

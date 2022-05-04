@@ -22,7 +22,7 @@ char *Model::getInput() {
 }
 
 void Model::addInput(const std::string &in) {
-    if (this->input == "error") {
+    if (this->input == DIV_ZERO_ERROR || this->input == INVALID_ARG) {
         this->input.clear();
     }
     this->input += in;
@@ -36,6 +36,10 @@ void Model::clearInput() {
 void Model::removeInput() {
     if (!this->input.empty()) {
         this->input.pop_back();
+//      Remove two times if input.back() is not digit or length of the input is greater than 0
+        if(!isdigit(this->input[this->input.length() - 1]) && this->input.length() > 0) {
+            this->input.pop_back();
+        }
     }
 }
 
@@ -45,7 +49,15 @@ std::string Model::calculateResult() {
     if (this->input.empty()) {
         this->result.clear();
     } else {
-        this->result = sol.getSolution();
+        try{
+            this->result = sol.getSolution();
+        } catch (std::runtime_error e) {
+            std::cout << e.what() << std::endl;
+            this->result = e.what();
+        } catch (std::invalid_argument e) {
+            std::cout << e.what() << std::endl;
+            this->result = e.what();
+        }
     }
 
     this->input = this->result;

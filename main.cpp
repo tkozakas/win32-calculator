@@ -9,6 +9,10 @@
 int main() {
 
     Model *model = new Model;
+
+//    model->addInput("15 / 3 + - 3");
+//    std::cout << model->calculateResult() << std::endl;
+
     View *view = new View;
     Controller *controller = new Controller(view, model);
     Observer *observer = new Observer(controller);

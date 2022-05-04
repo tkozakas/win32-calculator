@@ -6,6 +6,8 @@
 #include "../controller/Observer.h"
 #include "Solution.h"
 
+#define DIV_ZERO_ERROR "Math error: Attempted to divide by Zero\n"
+#define INVALID_ARG "Error: Invalid argument\n"
 class Model {
 private:
     char *convertToPtrChar(const std::string &);

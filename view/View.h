@@ -21,9 +21,13 @@ public:
     void createWindow();
 
 private:
+    static void colorBackground(WPARAM wparam);
+
     static LRESULT CALLBACK windowProcess(HWND, UINT, WPARAM, LPARAM);
 
     static void buttonInput(WPARAM);
+
+    static void keyboardInput(WPARAM);
 
     static void updateField(const char *);
 

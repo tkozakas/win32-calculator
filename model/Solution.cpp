@@ -25,7 +25,7 @@ bool Solution::isOperator(char c) {
 }
 
 bool Solution::isOperand(const string &c) {
-    return !isOperator(c) && (c != ")" && c != "(") || c.size() > 1;
+    return !isOperator(c) && (c != "(" && c != ")") && isdigit(c[0]) || (c[0] == '-' && isdigit(c[1]));
 }
 
 // Function simplifies initial expression, by reducing signs ("-" && "-" = "+"; "-" && "val" = "-val")
@@ -57,7 +57,10 @@ Type Solution::calculateWithSign(char c, Type a, Type b) {
         case '*':
             return (a * b);
         case '/':
-            return (a / b);
+            return (b == 0) ?
+                   throw runtime_error("Math error: Attempted to divide by Zero\n") : (a / b);
+        default:
+            throw invalid_argument("Error: Invalid argument\n");
     }
     return 0;
 }
@@ -70,7 +73,7 @@ int Solution::getPriority(char c) {
 // Function calculates result using postfix expression, return value
 Type Solution::postfixCalculator(std::vector<string> postfixes) {
     std::vector<Type> operands;
-    Type a, b, c;
+    Type a, b, c = 0;
     std::string leftSide;
 
     for (auto &postfix: postfixes) {
@@ -91,7 +94,9 @@ Type Solution::postfixCalculator(std::vector<string> postfixes) {
 //          push back result in operands vector
             operands.push_back(c);
         }
-
+    }
+    if (operands.empty()) {
+        throw invalid_argument("Error: Invalid argument\n");
     }
 //  return last operand (result)
     return operands[0];
@@ -118,7 +123,9 @@ std::vector<string> Solution::convertToPostfix(std::vector<string> infix) {
                 operators.pop_back();
             }
 //          pop ( also from the operators
-            operators.pop_back();
+            if (!operators.empty()) {
+                operators.pop_back();
+            }
         } else if (isOperator(inf)) {
 //          while operator vector is not empty and priority of string is less than priority of operator vector last element,
 //          do pop and add into postfix expression
