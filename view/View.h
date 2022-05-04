@@ -42,7 +42,6 @@ private:
     static HWND hWnd;
     static HWND textField;
     static HINSTANCE hInstance;
-    static HFONT hf;
 
     WNDCLASS wndClass{};
 };

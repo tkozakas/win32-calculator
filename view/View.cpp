@@ -13,7 +13,6 @@ Observer *View::observer{};
 HWND View::textField{};
 HWND View::hWnd{};
 HINSTANCE View::hInstance{};
-HFONT View::hf{};
 
 View::View() {
     std::cout << "Creating Window\n";
@@ -229,18 +228,30 @@ void View::createTextField() {
 }
 
 void View::createButtons() {
-    int xPos[20] = {60, 10, 60, 110,
-                    10, 60, 110, 10,
-                    60, 110, 10, 60,
-                    110, 160, 160, 160,
-                    160, 160, 10, 110};
-    int yPos[20] = {280, 130, 130, 130,
-                    180, 180, 180, 230,
-                    230, 230, 80, 80,
-                    80, 80, 130, 180,
-                    230, 280, 280, 280};
+    std::pair<int, int> pair[20] = {
+            {60,  280},
+            {10,  230},
+            {60,  230},
+            {110, 230},
+            {10,  180},
+            {60,  180},
+            {110, 180},
+            {10,  130},
+            {60,  130},
+            {110, 130},
+            {10,  80},
+            {60,  80},
+            {110, 80},
+            {160, 80},
+            {160, 130},
+            {160, 180},
+            {160, 230},
+            {160, 280},
+            {10,  280},
+            {110, 280},
+    };
     for (int i = 0; i < 20; i++) {
-        HWND button = Button("", (HMENU) i, xPos[i], yPos[i]);
+        Button("", (HMENU) i, pair[i].first, pair[i].second);
     }
 }
 
