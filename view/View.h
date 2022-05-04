@@ -18,12 +18,17 @@ public:
 
     bool processMessage();
 
+    void createButtons();
+
     void createWindow();
 
+    void createTextField();
 private:
-    static void colorBackground(WPARAM wparam);
-
     static LRESULT CALLBACK windowProcess(HWND, UINT, WPARAM, LPARAM);
+
+    static void colorButton(WPARAM, LPARAM);
+
+    static void colorBackground(WPARAM);
 
     static void buttonInput(WPARAM);
 
@@ -36,10 +41,10 @@ private:
 
     static HWND hWnd;
     static HWND textField;
+    static HINSTANCE hInstance;
+    static HFONT hf;
 
     WNDCLASS wndClass{};
-    HINSTANCE hInstance{};
-    HFONT hf{};
 };
 
 

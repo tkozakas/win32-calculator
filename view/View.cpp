@@ -1,3 +1,4 @@
+
 #include "View.h"
 
 #define BUTTON_WIDTH 50
@@ -5,17 +6,20 @@
 #define WINDOW_WIDTH 200
 #define WINDOW_HEIGHT 330
 
-#define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD, \
-                                                (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), hInstance, nullptr);
+#define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_OWNERDRAW, \
+(x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), hInstance, nullptr)
 
 Observer *View::observer{};
 HWND View::textField{};
 HWND View::hWnd{};
+HINSTANCE View::hInstance{};
+HFONT View::hf{};
 
-View::View()
-        : hInstance(GetModuleHandle(nullptr)) {
+View::View() {
     std::cout << "Creating Window\n";
+    HINSTANCE hInst(GetModuleHandle(nullptr));
 
+    hInstance = hInst;
     this->wndClass.lpszClassName = "Window Class";
     this->wndClass.hInstance = hInstance;
     this->wndClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 3);
@@ -30,6 +34,8 @@ View::View()
     }
 
     createWindow();
+    createButtons();
+    createTextField();
 }
 
 View::~View() {
@@ -64,31 +70,47 @@ bool View::processMessage() {
 
 void View::colorBackground(WPARAM wparam) {
     SetTextColor((HDC) wparam, RGB(255, 255, 255));
-    SetBkColor((HDC) wparam, RGB(255, 255, 255));
+    SetBkColor((HDC) wparam, RGB(0, 0, 0));
     SetBkMode((HDC) wparam, TRANSPARENT);
 }
 
-HBITMAP hBitmap = nullptr;
+void View::colorButton(WPARAM wparam, LPARAM lparam) {
+    const char *character[20] = {"0", "1", "2", "3", "4",
+                                 "5", "6", "7", "8", "9",
+                                 ".", "(", ")", "/", "*",
+                                 "-", "+", "=", "C", "X"};
+    LPDRAWITEMSTRUCT lpDIS = (LPDRAWITEMSTRUCT) lparam;
+
+    // Button
+    if (wparam >= 10 && wparam <= 12) {
+        SetDCBrushColor(lpDIS->hDC, RGB(128, 128, 128));
+    } else if (wparam >= 13 && wparam <= 17) {
+        SetDCBrushColor(lpDIS->hDC, RGB(255, 127, 80));
+    } else {
+        SetDCBrushColor(lpDIS->hDC, RGB(40, 79, 79));
+    }
+    SelectObject(lpDIS->hDC, GetStockObject(DC_BRUSH));
+    FillRect(lpDIS->hDC, &lpDIS->rcItem, CreateSolidBrush(0));
+    RoundRect(lpDIS->hDC, lpDIS->rcItem.left, lpDIS->rcItem.top,
+              lpDIS->rcItem.right, lpDIS->rcItem.bottom, BUTTON_WIDTH, BUTTON_HEIGHT);
+
+    // Text
+    SelectObject(lpDIS->hDC, CreateFont(35, 0, 0, 0,
+                                        FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET,
+                                        OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                                        DEFAULT_QUALITY, DEFAULT_PITCH, "Arial"));
+    SetTextColor(lpDIS->hDC, RGB(211, 211, 211));
+    SetBkMode(lpDIS->hDC, TRANSPARENT);
+    DrawTextA(lpDIS->hDC, character[wparam], 1, &lpDIS->rcItem,
+              DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+}
 
 LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    HDC hDC, hMemDC;
-    RECT r;
+
     switch (uMsg) {
-        case WM_CTLCOLORBTN:
-//            hDC = GetDC(hWnd);
-//            hMemDC = CreateCompatibleDC(hDC);
-//            hBitmap = CreateCompatibleBitmap(hDC, 55, 25);
-//            SelectObject(hMemDC, hBitmap);
-//            SetDCBrushColor(hMemDC, RGB(0, 0, 255));
-//            r = {0};
-//            r.left = 0;
-//            r.right = 55;
-//            r.top = 0;
-//            r.bottom = 25;
-//            FillRect(hMemDC, &r, (HBRUSH) GetStockObject(DC_BRUSH));
-//            DeleteDC(hMemDC);
-//            ReleaseDC(hWnd, hDC);
-            break;
+        case WM_DRAWITEM:
+            colorButton(wParam, lParam);
+            return true;
         case WM_CTLCOLOREDIT:
             colorBackground(wParam);
             return (LRESULT) CreateSolidBrush(BLACK_BRUSH);
@@ -128,42 +150,44 @@ void View::keyboardInput(WPARAM wparam) {
         observer->removeQuery();
     }
 
-    updateField(observer->getInputQuery());
+    if (!str.empty()) {
+        updateField(observer->getInputQuery());
+    }
 }
 
 void View::buttonInput(WPARAM wparam) {
-    if (wparam >= 200 && wparam <= 209) {
-        observer->inputQuery(std::to_string(wparam - 200));
+    if (wparam >= 0 && wparam <= 9) {
+        observer->inputQuery(std::to_string(wparam));
     }
     switch (wparam) {
-        case 11:
+        case 10:
             observer->inputQuery(".");
             break;
-        case 12:
+        case 11:
             observer->inputQuery("( ");
             break;
-        case 13:
+        case 12:
             observer->inputQuery(" )");
             break;
-        case 14:
+        case 13:
             observer->inputQuery(" / ");
             break;
-        case 15:
+        case 14:
             observer->inputQuery(" * ");
             break;
-        case 16:
+        case 15:
             observer->inputQuery(" - ");
             break;
-        case 17:
+        case 16:
             observer->inputQuery(" + ");
             break;
-        case 18:
+        case 17:
             observer->resultQuery();
             break;
-        case 19:
+        case 18:
             observer->clearQuery();
             break;
-        case 20:
+        case 19:
             observer->removeQuery();
             break;
         default:
@@ -171,10 +195,53 @@ void View::buttonInput(WPARAM wparam) {
     }
 
     updateField(observer->getInputQuery());
+    SetFocus(hWnd);
 }
 
 void View::updateField(const char *fieldText) {
     SetWindowTextA(textField, fieldText);
+}
+
+void View::createTextField() {
+    textField = CreateWindow(
+            "EDIT",
+            "",
+            WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL,
+            0,
+            0,
+            WINDOW_WIDTH,
+            60,
+            hWnd,
+            (HMENU) 212222222,
+            hInstance,
+            nullptr
+    );
+
+    LOGFONT logfont;
+    ZeroMemory(&logfont, sizeof(LOGFONT));
+    logfont.lfCharSet = DEFAULT_CHARSET;
+    logfont.lfHeight = 27;
+    logfont.lfWeight = 15;
+    logfont.lfQuality = 25;
+    HFONT hFont = CreateFontIndirect(&logfont);
+
+    SendMessage(textField, WM_SETFONT, (WPARAM) hFont, TRUE);
+}
+
+void View::createButtons() {
+    int xPos[20] = {50, 0, 50, 100,
+                    0, 50, 100, 0,
+                    50, 100, 0, 50,
+                    100, 150, 150, 150,
+                    150, 150, 0, 100};
+    int yPos[20] = {270, 120, 120, 120,
+                    170, 170, 170, 220,
+                    220, 220, 70, 70,
+                    70, 70, 120, 170,
+                    220, 270, 270, 270};
+    for (int i = 0; i < 20; i++) {
+        HWND button = Button("", (HMENU) i, xPos[i], yPos[i]);
+    }
 }
 
 void View::createWindow() {
@@ -183,7 +250,6 @@ void View::createWindow() {
     rect.top = 250;
     rect.right = rect.left + WINDOW_WIDTH;
     rect.bottom = rect.top + WINDOW_HEIGHT;
-
     AdjustWindowRect(
             &rect,
             WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
@@ -201,74 +267,6 @@ void View::createWindow() {
             hInstance,
             nullptr
     );
-
-
-    // Text Field
-    textField = CreateWindow(
-            "EDIT",
-            "",
-            WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL,
-            0,
-            0,
-            WINDOW_WIDTH,
-            60,
-            hWnd,
-            0,
-            hInstance,
-            nullptr
-    );
-
-    // Creates the font
-    hf = CreateFont(
-            150,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            "Cambria Math"
-    );
-    // Buttons
-    Button("0", 200, 50, 270);
-    Button("1", 201, 0, 120);
-    Button("2", 202, 50, 120);
-    Button("3", 203, 100, 120);
-    Button("4", 204, 0, 170);
-    Button("5", 205, 50, 170);
-    Button("6", 206, 100, 170);
-    Button("7", 207, 0, 220);
-    Button("8", 208, 50, 220);
-    Button("9", 209, 100, 220);
-
-    Button(".", 11, 0, 70);
-    Button("(", 12, 50, 70);
-    Button(")", 13, 100, 70);
-
-    Button("/", 14, 150, 70);
-    Button("*", 15, 150, 120);
-    Button("-", 16, 150, 170);
-    Button("+", 17, 150, 220);
-    Button("=", 18, 150, 270);
-    Button("C", 19, 0, 270);
-    Button("X", 20, 100, 270);
-
-    //Sets the font for all buttons. buttons id are in range of 200 to 209
-    for (int i = 0; i < 10; i++) {
-        SendDlgItemMessage(
-                hWnd,
-                200 + i,
-                WM_SETFONT,
-                (WPARAM) hf,
-                TRUE
-        );
-    }
 
     ShowWindow(hWnd, SW_SHOW);
 }
