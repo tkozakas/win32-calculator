@@ -2,8 +2,14 @@
 
 #define BUTTON_WIDTH 50
 #define BUTTON_HEIGHT 50
+#define BUTTON_TEXT_HEIGHT 30
+#define BUTTON_TEXT_WIDTH 12
+
 #define WINDOW_WIDTH 220
 #define WINDOW_HEIGHT 350
+
+#define TEXT_HEIGHT 23
+#define TEXT_WIDTH 12
 
 #define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_OWNERDRAW, \
 (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), hInstance, nullptr)
@@ -12,6 +18,9 @@ Observer *View::observer{};
 HWND View::textField{};
 HWND View::hWnd{};
 HINSTANCE View::hInstance{};
+
+HFONT View::hFont;
+LOGFONT View::font;
 
 const char *View::character[20] = {
         "0", "1", "2", "3", "4",
@@ -101,7 +110,6 @@ bool View::processMessage() {
 
 void View::colorBackground(WPARAM wparam) {
     SetTextColor((HDC) wparam, RGB(255, 255, 255));
-    SetBkColor((HDC) wparam, RGB(0, 0, 0));
     SetBkMode((HDC) wparam, TRANSPARENT);
 }
 
@@ -110,19 +118,20 @@ void View::colorButton(WPARAM wparam, LPARAM lparam) {
 
     // Button
     if (wparam >= 10 && wparam <= 12) {
-        SetDCBrushColor(lpDIS->hDC, RGB(128, 128, 128));
+        SetDCBrushColor(lpDIS->hDC, RGB(128, 128, 128)); // silver grey
     } else if (wparam >= 13 && wparam <= 17) {
-        SetDCBrushColor(lpDIS->hDC, RGB(255, 127, 80));
+        SetDCBrushColor(lpDIS->hDC, RGB(255, 127, 80)); // orange
     } else {
-        SetDCBrushColor(lpDIS->hDC, RGB(40, 79, 79));
+        SetDCBrushColor(lpDIS->hDC, RGB(40, 79, 79)); // grey
     }
+
     SelectObject(lpDIS->hDC, GetStockObject(DC_BRUSH));
     FillRect(lpDIS->hDC, &lpDIS->rcItem, CreateSolidBrush(0));
     RoundRect(lpDIS->hDC, lpDIS->rcItem.left, lpDIS->rcItem.top,
               lpDIS->rcItem.right, lpDIS->rcItem.bottom, BUTTON_WIDTH, BUTTON_HEIGHT);
 
     // Text
-    SelectObject(lpDIS->hDC, CreateFont(35, 0, 0, 0,
+    SelectObject(lpDIS->hDC, CreateFont(BUTTON_TEXT_HEIGHT, BUTTON_TEXT_WIDTH, 0, 0,
                                         FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET,
                                         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                                         DEFAULT_QUALITY, DEFAULT_PITCH, "Arial"));
@@ -219,13 +228,13 @@ void View::buttonInput(WPARAM wparam) {
         default:
             break;
     }
-
     updateField(observer->getInputQuery());
     SetFocus(hWnd);
 }
 
 void View::updateField(const char *fieldText) {
     SetWindowTextA(textField, fieldText);
+    SendMessage(textField, WM_SETFONT, (WPARAM) hFont, TRUE);
 }
 
 void View::createTextField() {
@@ -243,13 +252,12 @@ void View::createTextField() {
             nullptr
     );
 
-    LOGFONT font;
     ZeroMemory(&font, sizeof(LOGFONT));
     font.lfCharSet = DEFAULT_CHARSET;
-    font.lfHeight = 27;
-    font.lfWeight = 15;
-    font.lfQuality = 25;
-    HFONT hFont = CreateFontIndirect(&font);
+    font.lfHeight = TEXT_HEIGHT;
+    font.lfWeight = TEXT_WIDTH;
+    font.lfQuality = TEXT_HEIGHT;
+    hFont = CreateFontIndirect(&font);
 
     SendMessage(textField, WM_SETFONT, (WPARAM) hFont, TRUE);
 }

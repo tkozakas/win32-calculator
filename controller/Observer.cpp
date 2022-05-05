@@ -25,10 +25,6 @@ char *Observer::getInputQuery() {
     return contr->getModelInput();
 }
 
-bool Observer::isModelSet() {
-    return contr->getModel() != nullptr;
-}
-
 void Observer::setController(class Controller *c) {
     this->contr = c;
 }

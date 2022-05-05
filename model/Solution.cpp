@@ -17,11 +17,7 @@ void Solution::setExpression(const std::string &expression) {
 }
 
 bool Solution::isOperator(const string &c) {
-    return isOperator(c[0]);
-}
-
-bool Solution::isOperator(char c) {
-    return (c == '+' || c == '-' || c == '*' || c == '/');
+    return (c == "+" || c == "-" || c == "*" || c == "/");
 }
 
 bool Solution::isOperand(const string &c) {
@@ -33,7 +29,6 @@ std::vector<std::string> Solution::reduceSign(std::vector<std::string> expressio
 
     for (long long e = 0; e < expression.size(); e++) {
         if (expression[e] == "-" && isOperand(expression[e + 1]) && e + 1 < expression.size()) {
-
             expression[e + 1] = to_string(stoi(expression[e + 1]) * -1);
 
             if (e > 0 && isOperand(expression[e - 1])) {
@@ -57,12 +52,10 @@ Type Solution::calculateWithSign(char c, Type a, Type b) {
         case '*':
             return (a * b);
         case '/':
-            return (b == 0) ?
-                   throw runtime_error("Math error: Attempted to divide by Zero\n") : (a / b);
+            return (b == 0) ? throw runtime_error("Math error: Attempted to divide by Zero\n") : (a / b);
         default:
             throw invalid_argument("Error: Invalid argument\n");
     }
-    return 0;
 }
 
 // Function return priority of specific operator
@@ -160,6 +153,14 @@ std::vector<string> Solution::tokenizer(string str) {
     while (token) {
         tokens.push_back(token);
         token = std::strtok(nullptr, delimiters);
+    }
+
+    int i = 0;
+    for (auto t: tokens) {
+        if (t.empty()) {
+            t.erase(t.begin() + i);
+        }
+        i++;
     }
 
     return tokens;

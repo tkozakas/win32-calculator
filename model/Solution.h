@@ -7,8 +7,7 @@
 
 #include <bits/stdc++.h>
 
-using namespace std;
-typedef int Type;
+typedef long double Type;
 
 class Solution {
 public:
@@ -25,24 +24,22 @@ public:
 private:
     int getPriority(char);
 
-    bool isOperator(const string &);
+    bool isOperator(const std::string &);
 
-    bool isOperator(char);
+    bool isOperand(const std::string &);
 
-    bool isOperand(const string &);
-
-    std::vector<string> tokenizer(string);
+    std::vector<std::string> tokenizer(std::string);
 
     Type calculateWithSign(char, Type, Type);
 
-    Type postfixCalculator(std::vector<string>);
+    Type postfixCalculator(std::vector<std::string>);
 
-    std::vector<string> convertToPostfix(std::vector<string>);
+    std::vector<std::string> convertToPostfix(std::vector<std::string>);
 
     std::vector<std::string> reduceSign(std::vector<std::string>);
 private:
     std::string result;
-    vector<std::string> tokenizedExpr;
+    std::vector<std::string> tokenizedExpr;
 };
 
 

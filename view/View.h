@@ -44,6 +44,9 @@ private:
     static HWND textField;
     static HINSTANCE hInstance;
 
+    static  LOGFONT font;
+    static HFONT hFont;
+
     WNDCLASS wndClass{};
 
     static const char *character[20];

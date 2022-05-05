@@ -2,16 +2,12 @@
 #define CALCULATOR_MODEL_H
 
 #include <windows.h>
-
-#include "../controller/Observer.h"
 #include "Solution.h"
 
 #define DIV_ZERO_ERROR "Math error: Attempted to divide by Zero\n"
 #define INVALID_ARG "Error: Invalid argument\n"
-class Model {
-private:
-    char *convertToPtrChar(const std::string &);
 
+class Model {
 public:
     Model();
 
@@ -30,6 +26,7 @@ public:
     std::string calculateResult();
 
     Model &operator=(const std::string &);
+
 private:
     std::string input;
     std::string result;
