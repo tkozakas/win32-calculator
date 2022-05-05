@@ -16,17 +16,11 @@ class Controller {
 public:
     Controller(class View *v, class Model *m);
 
-    Controller(class Model *m);
-
-    Controller(class View *v);
-
     void setModel(Model *m);
 
     void setView(View *v);
 
     Model *getModel();
-
-    View *getView();
 
     char *getModelInput();
 

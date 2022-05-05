@@ -4,6 +4,7 @@
 
 #include <windows.h>
 #include "../controller/Observer.h"
+#include "iostream"
 
 class View {
 public:
@@ -44,6 +45,9 @@ private:
     static HINSTANCE hInstance;
 
     WNDCLASS wndClass{};
+
+    static const char *character[20];
+    static std::pair<int, int> pos[20];
 };
 
 

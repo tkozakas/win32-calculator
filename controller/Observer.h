@@ -6,7 +6,11 @@
 
 class Observer {
 public:
-    Observer(class Controller *c);
+    Observer();
+
+    Observer(class Controller *);
+
+    void setController(class Controller*);
 
     char *getInputQuery();
 
@@ -17,8 +21,6 @@ public:
     void clearQuery();
 
     void resultQuery();
-
-    bool isModelSet();
 
 private:
     Controller *contr;

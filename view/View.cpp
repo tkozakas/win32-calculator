@@ -1,4 +1,3 @@
-
 #include "View.h"
 
 #define BUTTON_WIDTH 50
@@ -6,13 +5,42 @@
 #define WINDOW_WIDTH 220
 #define WINDOW_HEIGHT 350
 
-#define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_OWNERDRAW, \
+#define Button(name, num, x, y) CreateWindow("BUTTON", (name), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_OWNERDRAW, \
 (x), (y), BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU) (num), hInstance, nullptr)
 
 Observer *View::observer{};
 HWND View::textField{};
 HWND View::hWnd{};
 HINSTANCE View::hInstance{};
+
+const char *View::character[20] = {
+        "0", "1", "2", "3", "4",
+        "5", "6", "7", "8", "9",
+        ".", "(", ")", "/", "*",
+        "-", "+", "=", "C", "X"
+};
+std::pair<int, int> View::pos[20] = {
+        {60,  280},
+        {10,  230},
+        {60,  230},
+        {110, 230},
+        {10,  180},
+        {60,  180},
+        {110, 180},
+        {10,  130},
+        {60,  130},
+        {110, 130},
+        {10,  80},
+        {60,  80},
+        {110, 80},
+        {160, 80},
+        {160, 130},
+        {160, 180},
+        {160, 230},
+        {160, 280},
+        {10,  280},
+        {110, 280},
+};
 
 View::View() {
     std::cout << "Creating Window\n";
@@ -39,6 +67,10 @@ View::View() {
 
 View::~View() {
     UnregisterClass("Window Class", this->hInstance);
+    delete observer;
+    delete hInstance;
+    delete textField;
+    delete hWnd;
 }
 
 void View::setObserver(Observer *obs) {
@@ -74,10 +106,6 @@ void View::colorBackground(WPARAM wparam) {
 }
 
 void View::colorButton(WPARAM wparam, LPARAM lparam) {
-    const char *character[20] = {"0", "1", "2", "3", "4",
-                                 "5", "6", "7", "8", "9",
-                                 ".", "(", ")", "/", "*",
-                                 "-", "+", "=", "C", "X"};
     LPDRAWITEMSTRUCT lpDIS = (LPDRAWITEMSTRUCT) lparam;
 
     // Button
@@ -105,7 +133,6 @@ void View::colorButton(WPARAM wparam, LPARAM lparam) {
 }
 
 LRESULT CALLBACK View::windowProcess(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
     switch (uMsg) {
         case WM_DRAWITEM:
             colorButton(wParam, lParam);
@@ -216,42 +243,20 @@ void View::createTextField() {
             nullptr
     );
 
-    LOGFONT logfont;
-    ZeroMemory(&logfont, sizeof(LOGFONT));
-    logfont.lfCharSet = DEFAULT_CHARSET;
-    logfont.lfHeight = 27;
-    logfont.lfWeight = 15;
-    logfont.lfQuality = 25;
-    HFONT hFont = CreateFontIndirect(&logfont);
+    LOGFONT font;
+    ZeroMemory(&font, sizeof(LOGFONT));
+    font.lfCharSet = DEFAULT_CHARSET;
+    font.lfHeight = 27;
+    font.lfWeight = 15;
+    font.lfQuality = 25;
+    HFONT hFont = CreateFontIndirect(&font);
 
     SendMessage(textField, WM_SETFONT, (WPARAM) hFont, TRUE);
 }
 
 void View::createButtons() {
-    std::pair<int, int> pair[20] = {
-            {60,  280},
-            {10,  230},
-            {60,  230},
-            {110, 230},
-            {10,  180},
-            {60,  180},
-            {110, 180},
-            {10,  130},
-            {60,  130},
-            {110, 130},
-            {10,  80},
-            {60,  80},
-            {110, 80},
-            {160, 80},
-            {160, 130},
-            {160, 180},
-            {160, 230},
-            {160, 280},
-            {10,  280},
-            {110, 280},
-    };
-    for (int i = 0; i < 20; i++) {
-        Button("", (HMENU) i, pair[i].first, pair[i].second);
+    for (long long i = 0; i < 20; i++) {
+        Button("", (HMENU) i, pos[i].first, pos[i].second);
     }
 }
 

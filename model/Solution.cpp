@@ -82,7 +82,7 @@ Type Solution::postfixCalculator(std::vector<string> postfixes) {
             operands.push_back(std::stod(postfix));
 //          operands.push_back(std::stoi(postfix));
         } else {
-//          if operands are a pair of two or more
+//          if operands are a pos of two or more
             if (operands.size() > 1) {
                 b = operands.back();
                 operands.pop_back();

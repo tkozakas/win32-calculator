@@ -1,4 +1,5 @@
 #include "Observer.h"
+Observer::Observer() = default;
 
 Observer::Observer(Controller *c) {
     this->contr = c;
@@ -26,5 +27,9 @@ char *Observer::getInputQuery() {
 
 bool Observer::isModelSet() {
     return contr->getModel() != nullptr;
+}
+
+void Observer::setController(class Controller *c) {
+    this->contr = c;
 }
 
